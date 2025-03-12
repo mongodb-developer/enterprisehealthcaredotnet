@@ -129,6 +129,14 @@ public class MongoDBService
         await _patientsCollection.InsertOneAsync(patient);
     }
 
+    public async Task UpdatePatientAsync(string id, Patient patient)
+    {
+        if(_patientsCollection == null)
+            throw new InvalidOperationException("Patients collection is not initialized");
+        
+        await _patientsCollection.ReplaceOneAsync(p => p.Id == ObjectId.Parse(id), patient);
+    }
+
     public async Task DeletePatientAsync(string id)
     {
         if(_patientsCollection == null)
