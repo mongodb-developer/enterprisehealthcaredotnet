@@ -1,0 +1,54 @@
+@page "/patient/{id}"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
+@inject NavigationManager NavigationManager
+
+<h3>Patient Details</h3>
+
+@if (patient == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div>
+        <p><strong>Name:</strong> @patient.PatientName</p>
+        <p><strong>Date of Birth:</strong> @patient.DateOfBirth?.ToShortDateString()</p>
+        <p><strong>Health Conditions: </strong></p>
+        <table class="table table-hover table-responsive-sm">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var condition in patient.PatientRecord.HealthConditions)
+            {
+                <tr>
+                    <td>@condition.Name</td>
+                    <td>@condition.Date.ToShortDateString()</td>
+                    <td>@condition.Status</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Patient? patient;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            patient = await MongoDbService.GetPatientAsync(Id);
+        }
+    }
+}
