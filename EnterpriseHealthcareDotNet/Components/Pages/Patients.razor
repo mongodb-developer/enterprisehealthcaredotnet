@@ -1,6 +1,7 @@
 @page "/patients"
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
+@using MongoDB.Bson
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
@@ -30,6 +31,8 @@ else
                 <td>@patient.DateOfBirth</td>
                 <td>
                     <a href="/patient/@patient.Id" class="btn btn-primary btn-sm">View Details</a>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
+
                 </td>
             </tr>
         }
@@ -48,5 +51,11 @@ else
     private void NavigateToPatientDetails(string patientId)
     {
         NavigationManager.NavigateTo($"/patient/{patientId}");
+    }
+    
+    private async Task DeletePatient(ObjectId patientId)
+    {
+        await MongoDbService.DeletePatientAsync(patientId.ToString());
+        patients = await MongoDbService.GetPatientsAsync();
     }
 }
