@@ -1,10 +1,13 @@
 using EnterpriseHealthcareDotNet.Components;
+using EnterpriseHealthcareDotNet.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSingleton<MongoDBService>();
 
 var app = builder.Build();
 
