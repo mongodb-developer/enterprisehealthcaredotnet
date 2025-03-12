@@ -1,0 +1,52 @@
+@page "/patients"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
+@inject NavigationManager NavigationManager
+
+@if (patients == null)
+{
+    <p>Loading...</p>
+}
+else if (!patients.Any())
+{
+    <p>No patients found.</p>
+}
+else
+{
+    <table class="table table-hover table-responsive-sm">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Date of Birth</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var patient in patients)
+        {
+            <tr>
+                <td>@patient.PatientName</td>
+                <td>@patient.DateOfBirth</td>
+                <td>
+                    <a href="/patient/@patient.Id" class="btn btn-primary btn-sm">View Details</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Patient>? patients;
+
+    protected override async Task OnInitializedAsync()
+    {
+        patients = await MongoDbService.GetPatientsAsync();
+    }
+
+    private void NavigateToPatientDetails(string patientId)
+    {
+        NavigationManager.NavigateTo($"/patient/{patientId}");
+    }
+}
