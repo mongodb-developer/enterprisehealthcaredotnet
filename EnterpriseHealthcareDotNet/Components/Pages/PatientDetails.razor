@@ -25,13 +25,22 @@ else
             </tr>
             </thead>
             <tbody>
-            @foreach (var condition in patient.PatientRecord.HealthConditions)
+            @if(patient.PatientRecord.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
             {
                 <tr>
-                    <td>@condition.Name</td>
-                    <td>@condition.Date.ToShortDateString()</td>
-                    <td>@condition.Status</td>
+                    <td colspan="3">No health conditions found.</td>
                 </tr>
+            }
+            else
+            {
+                @foreach (var condition in patient.PatientRecord.HealthConditions)
+                {
+                    <tr>
+                        <td>@condition.Name</td>
+                        <td>@condition.Date.ToShortDateString()</td>
+                        <td>@condition.Status</td>
+                    </tr>
+                }
             }
             </tbody>
         </table>
