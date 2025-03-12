@@ -1,7 +1,43 @@
 ﻿@page "/"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Home - Encrypted Healthcare DotNet</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="container mt-8" style="max-width: 800px">
+    <h3 class="text-center mb-8">Home</h3>
 
-Welcome to your new app.
+    <div class="paper elevation-2 pa-8 mb-8">
+        <p class="text-center mb-4">
+            This app is a demo of a healthcare application that uses encrypted data thanks to
+            <a href="https://mdb.link/queryable-encryption">Queryable Encryption</a> from MongoDB.
+        </p>
+
+        <p class="text-center">
+            This is a unique type of encryption that encrypts both the client-side data as well as the data at rest in the database. This means that the data is encrypted at all times, even when it is being queried.
+        </p>
+    </div>
+
+    <div class="paper elevation-4 pa-6 mt-8">
+        <nav>
+            <ul>
+                <li class="mb-2">
+                    <a href="/patients">
+                        <i class="mdi mdi-account-group"></i> View Patients
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="/patients/add">
+                        <i class="mdi mdi-account-plus"></i> Add Patient
+                    </a>
+                </li>
+                <li>
+                    <a href="/patients/search">
+                        <i class="mdi mdi-magnify"></i> Search Patients
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
