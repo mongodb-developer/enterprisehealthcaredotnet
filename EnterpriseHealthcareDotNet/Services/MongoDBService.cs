@@ -112,6 +112,14 @@ public class MongoDBService
             
         return await _patientsCollection.Find(_ => true).ToListAsync();
     }
+
+    public async Task<Patient> GetPatientAsync(string id)
+    {
+        if (_patientsCollection == null)
+            throw new InvalidOperationException("Patients collection is not initialized");
+        
+        return await _patientsCollection.Find(p => p.Id == ObjectId.Parse(id)).FirstOrDefaultAsync();
+    }
     
      public async Task AddPatientAsync(Patient patient)
     {
