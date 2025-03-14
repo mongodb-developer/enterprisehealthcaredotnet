@@ -1,7 +1,6 @@
 @page "/patient/{id}"
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
-@using MongoDB.Bson
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
@@ -14,8 +13,8 @@
 else
 {
     <div>
-        <p><strong>Name:</strong> <input type="text" @bind="patient.PatientName" readonly="@(!isEditMode)" /></p>
-        <p><strong>Date of Birth:</strong> <input type="date" @bind="patient.DateOfBirth" readonly="@(!isEditMode)" /></p>
+        <p><strong>Name:</strong> @patient.PatientName</p>
+        <p><strong>Date of Birth:</strong> @patient.DateOfBirth?.ToShortDateString()</p>
         <p><strong>Health Conditions: </strong></p>
         <table class="table table-hover table-responsive-sm">
             <thead>
@@ -37,28 +36,14 @@ else
                 @foreach (var condition in patient.PatientRecord.HealthConditions)
                 {
                     <tr>
-                        <td><input type="text" @bind="condition.Name" readonly="@(!isEditMode)" /></td>
-                        <td><input type="date" @bind="condition.Date" readonly="@(!isEditMode)" /></td>
-                        <td>
-                            <select @bind="condition.Status" disabled="@(!isEditMode)">
-                                @foreach (var status in Enum.GetValues(typeof(Status)))
-                                {
-                                    <option value="@status">@status</option>
-                                }
-                            </select>
-                        </td>
+                        <td>@condition.Name</td>
+                        <td>@condition.Date.ToShortDateString()</td>
+                        <td>@condition.Status</td>
                     </tr>
                 }
             }
             </tbody>
         </table>
-
-        <button class="btn btn-primary btn-sm" @onclick="ToggleEditMode">@editButtonText</button>
-        @if (isEditMode)
-        {
-            <button class="btn btn-success btn-sm" @onclick="SaveChanges">Save</button>
-        }
-        <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
     </div>
 }
 
@@ -67,36 +52,6 @@ else
     public string Id { get; set; }
 
     private Patient? patient;
-    private bool isEditMode = false;
-    private string editButtonText = "Edit";
 
-    protected override async Task OnParametersSetAsync()
-    {
-        if (!string.IsNullOrEmpty(Id))
-        {
-            patient = await MongoDbService.GetPatientAsync(Id);
-        }
-    }
-
-    private void ToggleEditMode()
-    {
-        isEditMode = !isEditMode;
-        editButtonText = isEditMode ? "Cancel" : "Edit";
-    }
-
-    private async Task SaveChanges()
-    {
-        if (patient != null)
-        {
-            await MongoDbService.UpdatePatientAsync(patient.Id.ToString(), patient);
-            isEditMode = false;
-            editButtonText = "Edit";
-        }
-    }
-
-    private async Task DeletePatient(ObjectId patientId)
-    {
-        await MongoDbService.DeletePatientAsync(patientId.ToString());
-        NavigationManager.NavigateTo("/patients");
-    }
+    
 }

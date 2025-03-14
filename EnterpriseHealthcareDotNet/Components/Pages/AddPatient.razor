@@ -68,7 +68,6 @@
 
     private async Task HandleSubmit()
     {
-        await MongoDbService.AddPatientAsync(newPatient);
         NavigationManager.NavigateTo("/patients");
     }
 }

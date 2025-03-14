@@ -30,9 +30,7 @@ else
                 <td>@patient.PatientName</td>
                 <td>@patient.DateOfBirth</td>
                 <td>
-                    <a href="/patient/@patient.Id" class="btn btn-primary btn-sm">View Details</a>
-                    <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
-
+                    <button class="btn btn-info btn-sm" @onclick="() => NavigateToPatientDetails(patient.Id)">Edit</button>
                 </td>
             </tr>
         }
@@ -45,17 +43,11 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        patients = await MongoDbService.GetPatientsAsync();
+       
     }
 
-    private void NavigateToPatientDetails(string patientId)
+    private void NavigateToPatientDetails(ObjectId patientId)
     {
-        NavigationManager.NavigateTo($"/patient/{patientId}");
-    }
-    
-    private async Task DeletePatient(ObjectId patientId)
-    {
-        await MongoDbService.DeletePatientAsync(patientId.ToString());
-        patients = await MongoDbService.GetPatientsAsync();
+        NavigationManager.NavigateTo($"/patient/{patientId.ToString()}");
     }
 }
