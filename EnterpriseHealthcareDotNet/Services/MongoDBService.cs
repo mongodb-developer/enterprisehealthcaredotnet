@@ -27,12 +27,12 @@ public class MongoDBService
         _keyVaultNamespace = CollectionNamespace.FromFullName($"{_keyVaultDatabaseName}.{_keyVaultCollectionName}");
         _qeHelpers = new QueryableEncryptionHelpers((IConfigurationRoot)_appSettings);
         _kmsProviderCredentials = _qeHelpers.GetKmsProviderCredentials(_kmsProviderName,
-            generateNewLocalKey: false);
-        
-        InitAsync().GetAwaiter().GetResult();
+            generateNewLocalKey: true);
+
+        Init();
     }
 
-    public async Task InitAsync()
+    public void Init()
     {
         var camelCaseConvention = new ConventionPack { new CamelCaseElementNameConvention() };
         ConventionRegistry.Register("CamelCase", camelCaseConvention, type => true);
@@ -88,7 +88,7 @@ public class MongoDBService
                     EncryptedFields = encryptedFields
                 };
 
-                await clientEncryption.CreateEncryptedCollectionAsync(patientDatabase,
+                clientEncryption.CreateEncryptedCollection(patientDatabase,
                     _encryptedCollectionName,
                     createCollectionOptions,
                     _kmsProviderName,
