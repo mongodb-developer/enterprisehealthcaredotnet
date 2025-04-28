@@ -30,7 +30,7 @@
                 <label for="conditionName">Condition Name</label>
                 <input type="text" id="conditionName" @bind="condition.Name" required>
                 <label for="conditionDate">Date</label>
-                <input type="date" id="conditionDate" @bind="condition.Date" required>
+                <input type="date" id="conditionDate" min="2000-01-01" @bind="condition.Date" required>
                 <label for="conditionStatus">Status</label>
                 <select id="conditionStatus" @bind="condition.Status">
                     @foreach (var status in Enum.GetValues(typeof(Status)))
