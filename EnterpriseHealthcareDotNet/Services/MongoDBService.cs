@@ -26,10 +26,28 @@ public class MongoDBService
         _uri = appSettings["MongoDBConnectionString"] ?? throw new ArgumentNullException(nameof(_uri), "MongoDbUri cannot be null");
         _keyVaultNamespace = CollectionNamespace.FromFullName($"{_keyVaultDatabaseName}.{_keyVaultCollectionName}");
         _qeHelpers = new QueryableEncryptionHelpers((IConfigurationRoot)_appSettings);
-        _kmsProviderCredentials = _qeHelpers.GetKmsProviderCredentials(_kmsProviderName,
-            generateNewLocalKey: true);
 
+        _kmsProviderCredentials = GenerateProviderCredentaials();
+        
         Init();
+    }
+
+    private Dictionary<string, IReadOnlyDictionary<string, object>> GenerateProviderCredentaials()
+    {
+        // Ensures that the file path functions across all operating systems.
+        string baseDir = AppContext.BaseDirectory;
+        string projectRoot = Path.Combine(baseDir, "..", "..", "..");
+
+        if (File.Exists(Path.Combine(projectRoot, "customer-master-key.txt")))
+        {
+            return _qeHelpers.GetKmsProviderCredentials(_kmsProviderName,
+                generateNewLocalKey: false);
+        } 
+        else
+        {
+            return _qeHelpers.GetKmsProviderCredentials(_kmsProviderName,
+                generateNewLocalKey: true);
+        }
     }
 
     public void Init()
