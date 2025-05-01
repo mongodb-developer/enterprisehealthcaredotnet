@@ -2,8 +2,14 @@
 
 This Blazor application is intended to be used to demonstrate features in the MongoDB C# Driver that are often of interest to enterprise companies.
 
-This `main` branch is a work in progress and is being slowly built up to act as a starting point for future content. There are other branches available to showcase specific features:
+This `with-change-streams` branch shows how to implement change streams with the MongoDB C# driver. 
 
-- `with-queryable-encryption` - This branch is configured to use Queryable Encryption, a feature unique to MongoDB that encrypts your data both in transit and at rest!
+## Running the application
 
-Further information on how to run it can be found on each branch as the requirements can differ.
+In order to run this application, you will need to follow a few steps:
+
+Add your MongoDB Connection string in the appsettings.json and appsettings.Development.json files.
+
+```bash
+dotnet run
+```
