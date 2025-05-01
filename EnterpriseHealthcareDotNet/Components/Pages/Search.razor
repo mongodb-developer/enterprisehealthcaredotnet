@@ -16,11 +16,15 @@
 
     <hr class="my-4" />
 
-    <h5>Search by Date of Birth</h5>
+    <h5>Search by Date of Birth Range</h5>
     <EditForm Model="searchModel" OnValidSubmit="HandleSearchByDOB">
         <div>
-            <label for="dob">Date of Birth</label>
-            <input type="date" id="dob" @bind="searchModel.DateOfBirth" class="form-control" required />
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" @bind="searchModel.StartDate" class="form-control" required />
+        </div>
+        <div class="mt-2">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" @bind="searchModel.EndDate" class="form-control" required />
         </div>
         <button type="submit" class="btn btn-primary mt-2">Search</button>
     </EditForm>
@@ -63,19 +67,21 @@
     private async Task HandleSearchBySSN()
     {
         SearchResults = await MongoDbService.SearchPatientsBySSNAsync(searchModel.SSN);
+        searchModel.SSN = "";
     }
 
     private async Task HandleSearchByDOB()
     {
-        if (searchModel.DateOfBirth.HasValue)
+        if (searchModel.StartDate.HasValue && searchModel.EndDate.HasValue)
         {
-            SearchResults = await MongoDbService.SearchPatientsByDOBAsync(searchModel.DateOfBirth.Value);
+            SearchResults = await MongoDbService.SearchPatientsByDOBAsync(searchModel.StartDate.Value, searchModel.EndDate.Value);
         }
     }
 
     public class SearchModel
     {
         public string SSN { get; set; }
-        public DateTime? DateOfBirth { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 }

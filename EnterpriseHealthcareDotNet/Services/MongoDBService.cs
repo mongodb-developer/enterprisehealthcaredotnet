@@ -162,4 +162,28 @@ public class MongoDBService
 
         await _patientsCollection.DeleteOneAsync(p => p.Id == ObjectId.Parse(id));
     }
+
+    public async Task<List<Patient>> SearchPatientsBySSNAsync(string searchSsn)
+    {
+        if (_patientsCollection == null)
+            throw new InvalidOperationException("Patients collection is not initialized");
+        var filter = Builders<Patient>.Filter.Eq("patientRecord.sSN", searchSsn);
+        
+        var patients = await _patientsCollection.Find(filter).ToListAsync();
+        return patients;
+    }
+
+    public async Task<List<Patient>> SearchPatientsByDOBAsync(DateTime startDate, DateTime endDate)
+    {
+        if (_patientsCollection == null)
+            throw new InvalidOperationException("Patients collection is not initialized");
+        
+        var filter = Builders<Patient>.Filter.And(
+            Builders<Patient>.Filter.Gte("dateOfBirth", startDate),
+            Builders<Patient>.Filter.Lte("dateOfBirth", endDate)
+        );
+        
+        var patients = await _patientsCollection.Find(filter).ToListAsync();
+        return patients;
+    }
 }
