@@ -1,0 +1,87 @@
+@page "/patients/search"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
+@inject NavigationManager NavigationManager
+
+<div>
+    <h5>Search by SSN</h5>
+    <EditForm Model="searchModel" OnValidSubmit="HandleSearchBySSN">
+        <div>
+            <label for="ssn">SSN</label>
+            <input type="text" id="ssn" @bind="searchModel.SSN" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </EditForm>
+
+    <hr class="my-4" />
+
+    <h5>Search by Date of Birth Range</h5>
+    <EditForm Model="searchModel" OnValidSubmit="HandleSearchByDOB">
+        <div>
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" @bind="searchModel.StartDate" class="form-control" required />
+        </div>
+        <div class="mt-2">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" @bind="searchModel.EndDate" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Search</button>
+    </EditForm>
+
+    <div class="mt-4">
+        <h5>Search Results</h5>
+        @if (SearchResults == null)
+        {
+            <p>No results found.</p>
+        }
+        else
+        {
+            <table class="table table-hover">
+                <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>SSN</th>
+                    <th>Date of Birth</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var patient in SearchResults)
+                {
+                    <tr>
+                        <td>@patient.PatientName</td>
+                        <td>@patient.PatientRecord.SSN</td>
+                        <td>@patient.DateOfBirth</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+
+@code {
+    private SearchModel searchModel = new SearchModel();
+    private List<Patient> SearchResults { get; set; }
+
+    private async Task HandleSearchBySSN()
+    {
+        SearchResults = await MongoDbService.SearchPatientsBySSNAsync(searchModel.SSN);
+        searchModel.SSN = "";
+    }
+
+    private async Task HandleSearchByDOB()
+    {
+        if (searchModel.StartDate.HasValue && searchModel.EndDate.HasValue)
+        {
+            SearchResults = await MongoDbService.SearchPatientsByDOBAsync(searchModel.StartDate.Value, searchModel.EndDate.Value);
+        }
+    }
+
+    public class SearchModel
+    {
+        public string SSN { get; set; }
+        public DateTime? StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
+    }
+}

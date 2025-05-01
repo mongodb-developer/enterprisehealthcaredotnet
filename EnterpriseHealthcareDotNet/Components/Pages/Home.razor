@@ -1,7 +1,96 @@
 ﻿@page "/"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
+@using Microsoft.AspNetCore.Components.Web
 
-<PageTitle>Home</PageTitle>
+<head>
+    <title>Enterprise Healthcare - Secure Patient Management</title>
+</head>
 
-<h1>Hello, world!</h1>
+<div class="container mt-5" style="max-width: 900px">
+    <div class="text-center mb-5">
+        <svg class="mb-3" style="height: 50px; width: auto; color: #2196F3;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
+        </svg>
+        <h2 class="fw-light">Enterprise Healthcare Platform</h2>
+        <p class="text-muted">Secure patient data management with advanced encryption</p>
+    </div>
 
-Welcome to your new app.
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title fw-semibold text-primary mb-3">Advanced Security</h5>
+                    <p class="card-text">
+                        This platform implements <a href="https://mdb.link/queryable-encryption" class="text-decoration-none">MongoDB Queryable Encryption</a>, 
+                        providing enterprise-grade protection for sensitive healthcare data.
+                    </p>
+                    <p class="card-text text-muted">
+                        Patient information is encrypted both client-side and at rest, ensuring complete data protection 
+                        throughout the entire lifecycle - even during database queries.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3">
+                        <i class="mdi mdi-account-group" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Patient Records</h5>
+                    <p class="card-text">Access and manage secure patient information</p>
+                    <a href="/patients" class="btn btn-outline-primary mt-2">View Patients</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3">
+                        <i class="mdi mdi-account-plus" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">New Patient</h5>
+                    <p class="card-text">Register new patients securely in the system</p>
+                    <a href="/patients/add" class="btn btn-outline-success mt-2">Add Patient</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0 hover-card">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3">
+                        <i class="mdi mdi-magnify" style="font-size: 1.5rem;"></i>
+                    </div>
+                    <h5 class="card-title">Search</h5>
+                    <p class="card-text">Find patient records with encrypted search</p>
+                    <a href="/patients/search" class="btn btn-outline-info mt-2">Search Patients</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .feature-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .hover-card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .hover-card:hover {
+        transform: translateY(-5px);
+    }
+</style>

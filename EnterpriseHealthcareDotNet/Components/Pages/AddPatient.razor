@@ -1,0 +1,74 @@
+@page "/patients/add"
+@using EnterpriseHealthcareDotNet.Models
+@using EnterpriseHealthcareDotNet.Services
+@inject MongoDBService MongoDbService
+@inject NavigationManager NavigationManager
+
+<div class="pa-4">
+    <h5>Add New Patient</h5>
+    <EditForm Model="newPatient" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label for="patientName">Name</label>
+            <input type="text" id="patientName" @bind="newPatient.PatientName" required>
+        </div>
+        <div>
+            <label for="dateOfBirth">Date of Birth</label>
+            <input type="date" id="dateOfBirth" @bind="newPatient.DateOfBirth" required>
+        </div>
+        <div>
+            <label for="ssn">SSN</label>
+            <input type="text" id="ssn" @bind="newPatient.PatientRecord.SSN" required>
+        </div>
+
+        <h5>Health Conditions</h5>
+        @foreach (var condition in newPatient.PatientRecord.HealthConditions)
+        {
+            <div>
+                <label for="conditionName">Condition Name</label>
+                <input type="text" id="conditionName" @bind="condition.Name" required>
+                <label for="conditionDate">Date</label>
+                <input type="date" id="conditionDate" min="2000-01-01" @bind="condition.Date" required>
+                <label for="conditionStatus">Status</label>
+                <select id="conditionStatus" @bind="condition.Status">
+                    @foreach (var status in Enum.GetValues(typeof(Status)))
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </select>
+                <button type="button" @onclick="() => RemoveCondition(condition)">Remove</button>
+            </div>
+        }
+        <button type="button" @onclick="AddCondition">Add Condition</button>
+
+        <button type="submit">Add Patient</button>
+    </EditForm>
+</div>
+
+@code {
+    private Patient newPatient = new Patient
+    {
+        PatientRecord = new PatientRecord
+        {
+            HealthConditions = new List<HealthCondition>()
+        }
+    };
+
+    private void AddCondition()
+    {
+        newPatient.PatientRecord.HealthConditions.Add(new HealthCondition());
+    }
+
+    private void RemoveCondition(HealthCondition condition)
+    {
+        newPatient.PatientRecord.HealthConditions.Remove(condition);
+    }
+
+    private async Task HandleSubmit()
+    {
+        await MongoDbService.AddPatientAsync(newPatient);
+        NavigationManager.NavigateTo("/patients");
+    }
+}
