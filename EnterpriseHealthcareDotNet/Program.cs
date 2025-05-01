@@ -1,4 +1,5 @@
 using EnterpriseHealthcareDotNet.Components;
+using EnterpriseHealthcareDotNet.Hubs;
 using EnterpriseHealthcareDotNet.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddSingleton<MongoDBService>();
+
+builder.Services.AddSignalR();
+
+
+builder.Services.AddHostedService<HealthConditionChangeStreamService>();
 
 var app = builder.Build();
 
@@ -27,5 +33,7 @@ app.UseAntiforgery();
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapHub<PharmacyHub>("/pharmacyhub");
 
 app.Run();

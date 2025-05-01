@@ -1,0 +1,52 @@
+@page "/pharmacy"
+@inject IJSRuntime JS
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.SignalR.Client
+@using System.Text.Json
+@implements IAsyncDisposable
+
+<h3>Pharmacy Alerts</h3>
+
+<ul>
+    @foreach (var alert in alerts)
+    {
+        <li>@alert</li>
+    }
+</ul>
+
+@code {
+    private List<string> alerts = new();
+    private HubConnection? hub;
+
+    protected override async Task OnInitializedAsync()
+    {
+        hub = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/pharmacyhub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        hub.On<object>("NewHealthConditionAdded", (data) =>
+{
+    var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
+    var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
+     InvokeAsync(() =>
+    {
+        foreach (var condition in conditions)
+        {
+            alerts.Insert(0, $"{patient} has a new condition: {condition}");
+        }
+        StateHasChanged();
+    });
+});
+
+        await hub.StartAsync();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hub is not null)
+        {
+            await hub.DisposeAsync();
+        }
+    }
+}

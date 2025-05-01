@@ -87,4 +87,12 @@ public class MongoDBService
         var patients = await _patientsCollection.Find(filter).ToListAsync();
         return patients;
     }
+
+    public IMongoCollection<Patient>? GetPatientsCollection()
+    {
+        if (_patientsCollection == null)
+            throw new InvalidOperationException("Patients collection is not initialized");
+
+        return _patientsCollection;
+    }
 }

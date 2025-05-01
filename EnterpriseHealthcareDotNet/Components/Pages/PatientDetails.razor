@@ -54,6 +54,24 @@ else
             </tbody>
         </table>
 
+        @if (isEditMode)
+        {
+            <h4>Add New Health Condition</h4>
+            <div>
+                <p><strong>Name:</strong> <input type="text" @bind="newCondition.Name" /></p>
+                <p><strong>Date:</strong> <input type="date" @bind="newCondition.Date" /></p>
+                <p><strong>Status:</strong>
+                    <select @bind="newCondition.Status">
+                        @foreach (var status in Enum.GetValues(typeof(Status)))
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </select>
+                </p>
+                <button class="btn btn-success btn-sm" @onclick="AddHealthCondition">Add Condition</button>
+            </div>
+        }
+
         <button class="btn btn-primary btn-sm" @onclick="ToggleEditMode">@editButtonText</button>
         @if (isEditMode)
         {
@@ -70,6 +88,7 @@ else
     private Patient? patient;
     private bool isEditMode = false;
     private string editButtonText = "Edit";
+    private HealthCondition newCondition = new();
 
     protected override async Task OnParametersSetAsync()
     {
@@ -99,5 +118,14 @@ else
     {
         await MongoDbService.DeletePatientAsync(patientId.ToString());
         NavigationManager.NavigateTo("/patients");
+    }
+
+    private void AddHealthCondition()
+    {
+        if (patient != null && newCondition != null)
+        {
+            patient.PatientRecord.HealthConditions.Add(newCondition);
+            newCondition = new HealthCondition(); // Reset the form
+        }
     }
 }
