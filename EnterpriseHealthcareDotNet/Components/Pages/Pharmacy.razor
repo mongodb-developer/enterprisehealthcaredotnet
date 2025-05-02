@@ -5,14 +5,32 @@
 @using System.Text.Json
 @implements IAsyncDisposable
 
-<h3>Pharmacy Alerts</h3>
-
-<ul>
-    @foreach (var alert in alerts)
-    {
-        <li>@alert</li>
-    }
-</ul>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Pharmacy Alerts</h3>
+                </div>
+                <div class="card-body">
+                    @if (alerts.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var alert in alerts)
+                            {
+                                <li class="list-group-item">@alert</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No alerts available.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     private List<string> alerts = new();
@@ -26,18 +44,18 @@
             .Build();
 
         hub.On<object>("NewHealthConditionAdded", (data) =>
-{
-    var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
-    var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
-     InvokeAsync(() =>
-    {
-        foreach (var condition in conditions)
         {
-            alerts.Insert(0, $"{patient} has a new condition: {condition}");
-        }
-        StateHasChanged();
-    });
-});
+            var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
+            var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
+            InvokeAsync(() =>
+            {
+                foreach (var condition in conditions)
+                {
+                    alerts.Insert(0, $"{patient} has a new condition: {condition}");
+                }
+                StateHasChanged();
+            });
+        });
 
         await hub.StartAsync();
     }
