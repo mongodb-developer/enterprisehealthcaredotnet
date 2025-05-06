@@ -43,19 +43,7 @@
             .WithAutomaticReconnect()
             .Build();
 
-        hub.On<object>("NewHealthConditionAdded", (data) =>
-        {
-            var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
-            var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
-            InvokeAsync(() =>
-            {
-                foreach (var condition in conditions)
-                {
-                    alerts.Insert(0, $"{patient} has a new condition: {condition}");
-                }
-                StateHasChanged();
-            });
-        });
+       
 
         await hub.StartAsync();
     }

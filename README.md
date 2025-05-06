@@ -2,7 +2,7 @@
 
 This Blazor application is intended to be used to demonstrate features in the MongoDB C# Driver that are often of interest to enterprise companies.
 
-This `with-change-streams` branch shows how to implement change streams with the MongoDB C# driver. 
+This `start-change-streams` branch acts as a starting point for adding MongoDB change streams functionality with the MongoDB C# driver.
 
 ## Running the application
 
