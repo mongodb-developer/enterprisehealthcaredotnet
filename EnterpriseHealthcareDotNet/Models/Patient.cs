@@ -22,7 +22,7 @@ public class HealthCondition
 {
     public string Name { get; set; }
     public Status Status { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime? Date { get; set; }
 }
 public enum Status
 {
