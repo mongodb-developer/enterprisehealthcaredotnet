@@ -47,8 +47,8 @@ public class HealthConditionChangeStreamService : BackgroundService
 
         await cursor.ForEachAsync(change =>
         {
-            if (change.OperationType != ChangeStreamOperationType.Replace || change.FullDocument is null)
-                return;
+           if (change.OperationType != ChangeStreamOperationType.Replace && change.OperationType != ChangeStreamOperationType.Create && change.FullDocument is null)
+            return;
 
             var patient = change.FullDocument;
             var patientId = patient.Id.ToString();
@@ -67,17 +67,32 @@ public class HealthConditionChangeStreamService : BackgroundService
                 // Log or handle the changes
                 if (addedConditions.Any())
                 {
-                    _hubContext.Clients.All.SendAsync("NewHealthConditionAdded", new
+                    if (change.OperationType == ChangeStreamOperationType.Create)
                     {
-                        patient = patient.PatientName,
-                        condition = addedConditions
-                    }, cancellationToken: stoppingToken);
+                        _hubContext.Clients.All.SendAsync("NewHealthConditionAdded", new
+                        {
+                            patient = patient.PatientName,
+                            condition = addedConditions
+                        }, cancellationToken: stoppingToken);
+                    }
+                   else if (change.OperationType == ChangeStreamOperationType.Update)
+                   {
+                        _hubContext.Clients.All.SendAsync("HealthConditionUpdated", new
+                        {
+                            patient = patient.PatientName,
+                            condition = addedConditions
+                        }, cancellationToken: stoppingToken);
+                   }
                 }
 
                 if (removedConditions.Any())
                 {
-                    Console.WriteLine(
-                        $"Removed conditions for patient {patientId}: {string.Join(", ", removedConditions)}");
+                     _hubContext.Clients.All.SendAsync("HealthConditionRemoved", new
+                    {
+                        patient = patient.PatientName,
+                        condition = removedConditions
+                    }, cancellationToken: stoppingToken);
+
                 }
 
                 // Update the cache with the new list
@@ -99,5 +114,6 @@ public class HealthConditionChangeStreamService : BackgroundService
                 }
             }
         }, stoppingToken);
+
     }
 }
