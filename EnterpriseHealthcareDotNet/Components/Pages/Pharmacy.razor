@@ -56,9 +56,40 @@
                 StateHasChanged();
             });
         });
+        
+        hub.On<object>("HealthConditionUpdated", (data) =>
+        {
+            var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
+            var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
+            InvokeAsync(() =>
+            {
+                foreach (var condition in conditions)
+                {
+                    alerts.Insert(0, $"{patient} condition {condition} has been updated");
+                }
+                StateHasChanged();
+            });
+        });
+        
+        hub.On<object>("HealthConditionRemoved", (data) =>
+        {
+            var patient = (string)((JsonElement)data).GetProperty("patient").GetString();
+            var conditions = ((JsonElement)data).GetProperty("condition").EnumerateArray().Select(x => x.GetString()).ToList();
+            InvokeAsync(() =>
+            {
+                foreach (var condition in conditions)
+                {
+                    alerts.Insert(0, $"{patient} condition {condition} has been removed");
+                }
+                StateHasChanged();
+            });
+        });
+
 
         await hub.StartAsync();
     }
+    
+    
 
     public async ValueTask DisposeAsync()
     {

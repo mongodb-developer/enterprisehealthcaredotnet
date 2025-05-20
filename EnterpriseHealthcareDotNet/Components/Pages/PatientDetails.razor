@@ -24,13 +24,17 @@ else
                 <th>Name</th>
                 <th>Date</th>
                 <th>Status</th>
+                @if (isEditMode)
+                {
+                    <th>Actions</th>
+                }
             </tr>
             </thead>
             <tbody>
             @if(patient.PatientRecord.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
             {
                 <tr>
-                    <td colspan="3">No health conditions found.</td>
+                    <td colspan="4">No health conditions found.</td>
                 </tr>
             }
             else
@@ -48,6 +52,12 @@ else
                                 }
                             </select>
                         </td>
+                        @if (isEditMode)
+                        {
+                            <td>
+                                <button class="btn btn-danger btn-sm" @onclick="() => DeleteHealthCondition(condition)">Delete</button>
+                            </td>
+                        }
                     </tr>
                 }
             }
@@ -126,6 +136,14 @@ else
         {
             patient.PatientRecord.HealthConditions.Add(newCondition);
             newCondition = new HealthCondition(); // Reset the form
+        }
+    }
+
+    private void DeleteHealthCondition(HealthCondition condition)
+    {
+        if (patient != null && patient.PatientRecord.HealthConditions.Contains(condition))
+        {
+            patient.PatientRecord.HealthConditions.Remove(condition);
         }
     }
 }
