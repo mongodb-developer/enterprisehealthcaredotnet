@@ -5,6 +5,8 @@
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
+<button class="btn btn-secondary btn-sm mb-3" @onclick="GoBack">Go Back</button>
+
 @if (patients == null)
 {
     <p>Loading...</p>
@@ -57,5 +59,10 @@ else
     {
         await MongoDbService.DeletePatientAsync(patientId.ToString());
         patients = await MongoDbService.GetPatientsAsync();
+    }
+    
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/");
     }
 }

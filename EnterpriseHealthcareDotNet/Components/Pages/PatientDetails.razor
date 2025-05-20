@@ -5,7 +5,10 @@
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
+<button class="btn btn-secondary btn-sm mb-3" @onclick="GoBack">Go Back</button>
 <h3>Patient Details</h3>
+
+
 
 @if (patient == null)
 {
@@ -43,7 +46,7 @@ else
                 {
                     <tr>
                         <td><input type="text" @bind="condition.Name" readonly="@(!isEditMode)" /></td>
-                        <td><input type="date" @bind="condition.Date" readonly="@(!isEditMode)" /></td>
+                        <td><input type="date" @bind="condition.Date"  min="2000-01-01" readonly="@(!isEditMode)" /></td>
                         <td>
                             <select @bind="condition.Status" disabled="@(!isEditMode)">
                                 @foreach (var status in Enum.GetValues(typeof(Status)))
@@ -145,5 +148,10 @@ else
         {
             patient.PatientRecord.HealthConditions.Remove(condition);
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/patients");
     }
 }
