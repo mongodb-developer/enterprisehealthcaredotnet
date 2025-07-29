@@ -2,13 +2,21 @@
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
 @inject MongoDBService MongoDbService
+@inject Microsoft.AspNetCore.Components.Authorization.AuthenticationStateProvider AuthenticationStateProvider
 @using Microsoft.AspNetCore.Components.Web
+
 
 <head>
     <title>Enterprise Healthcare - Secure Patient Management</title>
 </head>
 
 <div class="container mt-5" style="max-width: 900px">
+    <div class="d-flex justify-content-end align-items-center mb-2">
+        @if (isAuthenticated && !string.IsNullOrEmpty(userName))
+        {
+            <span class="text-muted">Welcome, <strong>@userName</strong></span>
+        }
+    </div>
     <div class="text-center mb-5">
         <svg class="mb-3" style="height: 50px; width: auto; color: #2196F3;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 3H5c-1.1 0-1.99.9-1.99 2L3 19c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-1 11h-4v4h-4v-4H6v-4h4V6h4v4h4v4z"/>
@@ -23,11 +31,11 @@
                 <div class="card-body p-4">
                     <h5 class="card-title fw-semibold text-primary mb-3">Advanced Security</h5>
                     <p class="card-text">
-                        This platform implements <a href="https://mdb.link/queryable-encryption" class="text-decoration-none">MongoDB Queryable Encryption</a>, 
+                        This platform implements <a href="https://mdb.link/queryable-encryption" class="text-decoration-none">MongoDB Queryable Encryption</a>,
                         providing enterprise-grade protection for sensitive healthcare data.
                     </p>
                     <p class="card-text text-muted">
-                        Patient information is encrypted both client-side and at rest, ensuring complete data protection 
+                        Patient information is encrypted both client-side and at rest, ensuring complete data protection
                         throughout the entire lifecycle - even during database queries.
                     </p>
                 </div>
@@ -48,7 +56,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="card h-100 shadow-sm border-0 hover-card">
                 <div class="card-body text-center p-4">
@@ -61,7 +69,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4">
             <div class="card h-100 shadow-sm border-0 hover-card">
                 <div class="card-body text-center p-4">
@@ -85,12 +93,28 @@
         width: 3rem;
         height: 3rem;
     }
-    
+
     .hover-card {
         transition: transform 0.2s ease-in-out;
     }
-    
+
     .hover-card:hover {
         transform: translateY(-5px);
     }
 </style>
+@code {
+    private string? userName;
+    private bool isAuthenticated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        isAuthenticated = user.Identity != null && user.Identity.IsAuthenticated;
+        if (isAuthenticated && user.Identity != null)
+        {
+            userName = user.Identity.Name ?? string.Empty;
+            await MongoDbService.InitializeAsync();
+        }
+    }
+}

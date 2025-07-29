@@ -1,0 +1,48 @@
+@page "/login"
+@using EnterpriseHealthcareDotNet.Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject NavigationManager NavigationManager
+@inject MongoDBService MongoDBService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<h3>Login</h3>
+
+@if (IsAuthenticated)
+{
+    <p>You are signed in.</p>
+}
+else
+{
+    <a href="/auth/login" class="btn btn-primary">Authorize with Entra ID</a>
+}
+
+@code {
+    private bool IsAuthenticated = false;
+
+    private bool ShouldRedirect = false;
+
+protected override async Task OnInitializedAsync()
+{
+    var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    var user = authState.User;
+
+    if (!user.Identity?.IsAuthenticated ?? true)
+    {
+        ShouldRedirect = true;
+    }
+    else
+    {
+        await MongoDBService.InitializeAsync();
+        NavigationManager.NavigateTo("/", forceLoad: true);
+    }
+}
+
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+if (firstRender && ShouldRedirect)
+    {
+        NavigationManager.NavigateTo("/login", forceLoad: true);
+    }
+}
+}
