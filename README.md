@@ -2,8 +2,9 @@
 
 This Blazor application is intended to be used to demonstrate features in the MongoDB C# Driver that are often of interest to enterprise companies.
 
-This `main` branch is a work in progress and is being slowly built up to act as a starting point for future content. There are other branches available to showcase specific features:
+This `start-oidc` branch acts as a starting point for adding OpenID Connect (OIDC) functionality with Azure EntraID, MongoDB Atlas Workplace Federation the MongoDB C# driver.
 
-- `with-queryable-encryption` - This branch is configured to use Queryable Encryption, a feature unique to MongoDB that encrypts your data both in transit and at rest!
+
+- `with-oidc` - This branch is a final version with the required OIDC support added with EntraID.
 
 Further information on how to run it can be found on each branch as the requirements can differ.
