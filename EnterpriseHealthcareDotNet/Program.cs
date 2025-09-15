@@ -10,7 +10,7 @@ builder.Services.AddRazorComponents()
 
 var connectionString = builder.Configuration.GetValue<string>("MongoDBConnectionString");
 builder.Services.AddDbContext<HealthcareDbContext>(options => options.UseMongoDB(
-    connectionString ?? "", "MongoDBMedical"));
+    connectionString ?? throw new ArgumentException("Missing MongoDB Connection String"), "MongoDBMedical"));
 
 builder.Services.AddScoped<PatientService>();
 
