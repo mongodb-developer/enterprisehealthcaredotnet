@@ -1,6 +1,7 @@
 using EnterpriseHealthcareDotNet.Components.Pages;
 using EnterpriseHealthcareDotNet.Models;
 using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.EntityFrameworkCore.Extensions;
 
@@ -17,17 +18,15 @@ public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options) 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        
+       
 
         modelBuilder.Entity<Patient>(entity =>
         {
             entity.ToCollection("Patients");
 
-            entity.HasKey(p => p.Id);
-
             entity.Property(p => p.Id)
-                .HasElementName("_id")
-                .ValueGeneratedNever()      // <- stop EF from treating it as generated
-                .IsRequired();              // <- makes intent crystal clear
+                .HasBsonRepresentation(BsonType.ObjectId);
 
           
             entity.OwnsOne(p => p.PatientRecord, pr =>

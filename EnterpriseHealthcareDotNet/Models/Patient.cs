@@ -3,11 +3,8 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace EnterpriseHealthcareDotNet.Models;
 
-[BsonIgnoreExtraElements]
 public class Patient
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     public string PatientName { get; set; }
     public DateTime? DateOfBirth { get; set; }
