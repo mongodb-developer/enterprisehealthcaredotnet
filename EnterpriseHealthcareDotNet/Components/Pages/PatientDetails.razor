@@ -2,7 +2,7 @@
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
 @using MongoDB.Bson
-@inject MongoDBService MongoDbService
+@inject PatientService PatientService
 @inject NavigationManager NavigationManager
 
 <h3>Patient Details</h3>
@@ -75,7 +75,7 @@ else
     {
         if (!string.IsNullOrEmpty(Id))
         {
-            patient = await MongoDbService.GetPatientAsync(Id);
+            patient = PatientService.GetPatientById(Id);
         }
     }
 
@@ -89,15 +89,15 @@ else
     {
         if (patient != null)
         {
-            await MongoDbService.UpdatePatientAsync(patient.Id.ToString(), patient);
+            PatientService.EditPatient(patient);
             isEditMode = false;
             editButtonText = "Edit";
         }
     }
 
-    private async Task DeletePatient(ObjectId patientId)
+    private async Task DeletePatient(string patientId)
     {
-        await MongoDbService.DeletePatientAsync(patientId.ToString());
+        PatientService.DeletePatient(patientId);
         NavigationManager.NavigateTo("/patients");
     }
 }

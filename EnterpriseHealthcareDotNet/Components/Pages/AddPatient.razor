@@ -1,7 +1,7 @@
 @page "/patients/add"
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
-@inject MongoDBService MongoDbService
+@inject PatientService PatientService
 @inject NavigationManager NavigationManager
 
 <div class="pa-4">
@@ -66,9 +66,9 @@
         newPatient.PatientRecord.HealthConditions.Remove(condition);
     }
 
-    private async Task HandleSubmit()
+    private void HandleSubmit()
     {
-        await MongoDbService.AddPatientAsync(newPatient);
+        PatientService.AddPatient(newPatient);
         NavigationManager.NavigateTo("/patients");
     }
 }

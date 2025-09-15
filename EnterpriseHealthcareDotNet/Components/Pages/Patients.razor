@@ -2,7 +2,8 @@
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
 @using MongoDB.Bson
-@inject MongoDBService MongoDbService
+@inject PatientService PatientService
+
 @inject NavigationManager NavigationManager
 
 @if (patients == null)
@@ -43,9 +44,9 @@ else
 @code {
     private List<Patient>? patients;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        patients = await MongoDbService.GetPatientsAsync();
+        patients = PatientService.GetAllPatients();
     }
 
     private void NavigateToPatientDetails(string patientId)
@@ -53,9 +54,9 @@ else
         NavigationManager.NavigateTo($"/patient/{patientId}");
     }
     
-    private async Task DeletePatient(ObjectId patientId)
+    private async Task DeletePatient(string patientId)
     {
-        await MongoDbService.DeletePatientAsync(patientId.ToString());
-        patients = await MongoDbService.GetPatientsAsync();
+        PatientService.DeletePatient(patientId);
+        patients = PatientService.GetAllPatients();
     }
 }

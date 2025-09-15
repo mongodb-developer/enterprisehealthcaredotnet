@@ -6,7 +6,9 @@ namespace EnterpriseHealthcareDotNet.Models;
 [BsonIgnoreExtraElements]
 public class Patient
 {
-    public ObjectId Id { get; set; }
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
     public string PatientName { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public PatientRecord PatientRecord { get; set; }

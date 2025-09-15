@@ -1,5 +1,6 @@
 using EnterpriseHealthcareDotNet.Components;
 using EnterpriseHealthcareDotNet.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddSingleton<MongoDBService>();
+var connectionString = builder.Configuration.GetValue<string>("MongoDBConnectionString");
+builder.Services.AddDbContext<HealthcareDbContext>(options => options.UseMongoDB(
+    connectionString ?? "", "MongoDBMedical"));
+
+builder.Services.AddScoped<PatientService>();
 
 var app = builder.Build();
 
