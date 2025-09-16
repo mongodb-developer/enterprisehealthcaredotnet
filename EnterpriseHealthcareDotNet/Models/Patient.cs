@@ -5,7 +5,7 @@ namespace EnterpriseHealthcareDotNet.Models;
 
 public class Patient
 {
-    public string Id { get; set; }
+    public ObjectId Id { get; set; }
     public string PatientName { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public PatientRecord PatientRecord { get; set; }

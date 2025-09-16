@@ -16,7 +16,7 @@ public class PatientService(HealthcareDbContext healthcareDbContext)
 
     public Patient? GetPatientById(string id)
     {
-        var patient =  _healthcareDbContext.Patients.FirstOrDefault(p => p.Id == id);
+        var patient =  _healthcareDbContext.Patients.FirstOrDefault(p => p.Id == ObjectId.Parse(id));
         return patient;
     }
 
@@ -35,8 +35,7 @@ public class PatientService(HealthcareDbContext healthcareDbContext)
             patientToEdit.PatientName = patient.PatientName;
             patientToEdit.DateOfBirth = patient.DateOfBirth;
             patientToEdit.PatientRecord = patient.PatientRecord;
-
-            _healthcareDbContext.Patients.Update(patientToEdit);
+           
             _healthcareDbContext.SaveChanges();
         }
         else
@@ -47,7 +46,7 @@ public class PatientService(HealthcareDbContext healthcareDbContext)
 
     public void DeletePatient(string patientId)
     {
-        var patientToDelete = _healthcareDbContext.Patients.Find(patientId);
+        var patientToDelete = _healthcareDbContext.Patients.Find(ObjectId.Parse(patientId));
 
         if (patientToDelete != null)
         {

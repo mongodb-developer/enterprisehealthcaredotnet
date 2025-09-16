@@ -23,8 +23,6 @@ public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options) 
         {
             entity.ToCollection("Patients");
 
-
-            entity.Property(p => p.Id).HasBsonRepresentation(BsonType.ObjectId);
             entity.OwnsOne(p => p.PatientRecord, pr =>
             {
                 pr.Property(r => r.SSN).HasElementName("sSN");
