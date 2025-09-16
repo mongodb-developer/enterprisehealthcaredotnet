@@ -52,10 +52,18 @@ public class MongoDBService
         mongoDBClientSettings.Credential = MongoCredential.CreateOidcCredential(new AccessTokenOidcCallback(accessToken));
 
         _client = new MongoClient(mongoDBClientSettings);
-        _patientsCollection = _client.GetDatabase("medicalRecords").GetCollection<Patient>("patients");
-        foreach (var patient in await _patientsCollection.Find(_ => true).ToListAsync())
+        try
         {
-            Console.WriteLine($"Found patient: {patient.PatientName}");
+            var result = await _client.GetDatabase("admin").RunCommandAsync<BsonDocument>(new BsonDocument("ping", 1));
+
+            if (result.GetValue("ok") == 1.0)
+            {
+                _patientsCollection = _client.GetDatabase("medicalRecords").GetCollection<Patient>("patients");
+            }
+        } catch (Exception ex)
+        {
+            Console.WriteLine($"Error connecting to MongoDB: {ex.Message}");
+            throw;
         }
     }
 
