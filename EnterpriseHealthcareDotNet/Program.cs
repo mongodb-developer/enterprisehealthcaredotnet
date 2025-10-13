@@ -13,17 +13,6 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 
-
-// var connectionString = builder.Configuration.GetValue<string>("MongoDBConnectionString");
-// builder.Services.AddDbContext<HealthcareDbContext>(options => options.UseMongoDB(
-//     connectionString ?? "", "MongoDBMedical"));
-
-builder.Services.AddSingleton<QueryableEncryptionHelpers>(sp =>
-{
-    var config = (IConfigurationRoot)sp.GetRequiredService<IConfiguration>();
-    return new QueryableEncryptionHelpers(config);
-});
-
 builder.Services.AddScoped<PatientService>();
 
 var configuration = builder.Configuration;

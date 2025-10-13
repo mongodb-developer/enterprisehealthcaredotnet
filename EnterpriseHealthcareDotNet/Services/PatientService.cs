@@ -34,7 +34,6 @@ public class PatientService(HealthcareDbContext healthcareDbContext)
             patientToEdit.DateOfBirth = patient.DateOfBirth;
             patientToEdit.PatientRecord = patient.PatientRecord;
 
-            healthcareDbContext.Patients.Update(patientToEdit);
             healthcareDbContext.SaveChanges();
         }
         else
