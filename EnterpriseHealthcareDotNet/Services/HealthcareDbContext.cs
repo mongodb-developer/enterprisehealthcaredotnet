@@ -7,19 +7,12 @@ using MongoDB.EntityFrameworkCore.Extensions;
 
 namespace EnterpriseHealthcareDotNet.Services;
 
-public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options) : DbContext(options)
+public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options, EncryptionKeys keys) : DbContext(options)
 {
     public DbSet<Patient> Patients { get;  init; }
-
-    public HealthcareDbContext Create(IMongoDatabase db) => new(new DbContextOptionsBuilder<HealthcareDbContext>()
-        .UseMongoDB(db.Client, db.DatabaseNamespace.DatabaseName)
-        .Options);
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-       
 
         modelBuilder.Entity<Patient>(entity =>
         {
@@ -28,10 +21,14 @@ public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options) 
             entity.Property(p => p.Id)
                 .HasBsonRepresentation(BsonType.ObjectId);
 
+            entity.Property(p => p.DateOfBirth)
+                .IsEncryptedForRange(new DateTime(1900, 1, 1),
+                    new DateTime(2100, 1, 1),
+                    keys.DobKeyId);
           
             entity.OwnsOne(p => p.PatientRecord, pr =>
             {
-                pr.Property(r => r.SSN).HasElementName("sSN");
+                pr.Property(r => r.SSN).IsEncryptedForEquality(keys.SsnKeyId).HasElementName("sSN");
 
                 // 👇 Configure the collection element name
                 pr.OwnsMany(r => r.HealthConditions, hc =>
@@ -46,3 +43,5 @@ public class HealthcareDbContext(DbContextOptions<HealthcareDbContext> options) 
         });
     }
 }
+
+public record EncryptionKeys(Guid SsnKeyId, Guid DobKeyId);
