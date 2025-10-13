@@ -11,35 +11,11 @@ public class QueryableEncryptionHelpers
   public QueryableEncryptionHelpers(IConfigurationRoot appSettings)
   {
     _appSettings = appSettings;
-    _cryptSharedLibPath = _appSettings["CryptSharedLibPath"] ?? throw new ArgumentNullException("CryptSharedLibPath", "Path to the Automatic Encryption Shared Library must be provided in appsettings.json");
     
     var relativeLibPath = _appSettings["CryptSharedLibPath"] ??
                           "mongo_crypt_shared_v1-macos-arm64-enterprise-8.2.0/lib/mongo_crypt_v1.dylib";
     var projectRoot = Directory.GetParent(AppContext.BaseDirectory)!.Parent!.Parent!.Parent!.FullName;
-    var absoluteLibPath = Path.GetFullPath(Path.Combine(projectRoot, relativeLibPath));
-
-    Console.WriteLine($"Resolved CryptSharedLibPath: {absoluteLibPath}");
-    Console.WriteLine($"Exists: {File.Exists(absoluteLibPath)}");
-  }
-  
-  public static Guid GetOrCreateDataKey(
-    ClientEncryption clientEncryption,
-    IMongoCollection<BsonDocument> keyVaultCollection,
-    string kmsProvider,
-    string keyAltName)
-  {
-    // Try to find existing key by alternate name
-    var filter = Builders<BsonDocument>.Filter.Eq("keyAltNames", keyAltName);
-    var existing = keyVaultCollection.Find(filter).FirstOrDefault();
-
-    if (existing != null)
-    {
-      return existing["_id"].AsGuid;
-    }
-
-    // Otherwise, create new key with alternate name
-    var options = new DataKeyOptions(alternateKeyNames: new[] { keyAltName });
-    return clientEncryption.CreateDataKey(kmsProvider, options, CancellationToken.None);
+    _cryptSharedLibPath = Path.GetFullPath(Path.Combine(projectRoot, relativeLibPath));
   }
 
   public Dictionary<string, IReadOnlyDictionary<string, object>> 
@@ -100,38 +76,13 @@ GetKmsProviderCredentials(string kmsProviderName,
  throw new Exception("Unrecognized value for KMS provider name \"" + kmsProviderName + "\"  encountered while retrieving KMS credentials.");
  }
 
-public BsonDocument GetCustomerMasterKeyCredentials(string kmsProvider)
-{
-  if (kmsProvider == "local")
-  {
-    // start-kmip-local-cmk-credentials
-    var customerMasterKeyCredentials = new BsonDocument();
-    // end-kmip-local-cmk-credentials
-    return customerMasterKeyCredentials;
-  }
-  else
-    {
-      throw new Exception("Unrecognized value for KMS provider name \"" + kmsProvider + "\"  encountered while retrieving Customer Master Key credentials.");
-    }
-  }
-
 public AutoEncryptionOptions GetAutoEncryptionOptions(CollectionNamespace keyVaultNamespace,
         IReadOnlyDictionary<string, IReadOnlyDictionary<string, object>> kmsProviderCredentials)
 {
-  var kmsProvider = kmsProviderCredentials.Keys.First();
-
-  var sharedLibPath = Path.GetFullPath(
-    _appSettings["CryptSharedLibPath"] ??
-    "EnterpriseHealthcareDotNet/mongo_crypt_shared_v1-macos-arm64-enterprise-8.2.0/lib/mongo_crypt_v1.dylib"
-  );
-
-  Console.WriteLine($"Resolved CryptSharedLibPath: {sharedLibPath}");
-  Console.WriteLine($"Exists: {File.Exists(sharedLibPath)}");
-
   var extraOptions = new Dictionary<string, object>
   {
     { "cryptSharedLibRequired", true },
-    { "cryptSharedLibPath", sharedLibPath }
+    { "cryptSharedLibPath",  _cryptSharedLibPath }
   };
 
 var autoEncryptionOptions = new AutoEncryptionOptions(
@@ -143,19 +94,4 @@ extraOptions: extraOptions);
   return autoEncryptionOptions;
 }
 
-public ClientEncryption GetClientEncryption(IMongoClient keyVaultClient,
-        CollectionNamespace keyVaultNamespace, Dictionary<string, IReadOnlyDictionary<string, object>> kmsProviderCredentials)
-{
-  var kmsProvider = kmsProviderCredentials.Keys.First();
-
-  // start-client-encryption
-  var clientEncryptionOptions = new ClientEncryptionOptions(
-                keyVaultClient: keyVaultClient,
-                keyVaultNamespace: keyVaultNamespace,
-                kmsProviders: kmsProviderCredentials
-  );
-  var clientEncryption = new ClientEncryption(clientEncryptionOptions);
-            // end-client-encryption
-            return clientEncryption;
-  }
 }
