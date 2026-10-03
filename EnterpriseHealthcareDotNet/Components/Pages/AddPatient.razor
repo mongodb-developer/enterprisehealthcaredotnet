@@ -4,48 +4,88 @@
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
-<div class="pa-4">
-    <h5>Add New Patient</h5>
-    <EditForm Model="newPatient" OnValidSubmit="HandleSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<PageTitle>Add Patient</PageTitle>
 
-        <div>
-            <label for="patientName">Name</label>
-            <input type="text" id="patientName" @bind="newPatient.PatientName" required>
-        </div>
-        <div>
-            <label for="dateOfBirth">Date of Birth</label>
-            <input type="date" id="dateOfBirth" @bind="newPatient.DateOfBirth" required>
-        </div>
-        <div>
-            <label for="ssn">SSN</label>
-            <input type="text" id="ssn" @bind="newPatient.PatientRecord.SSN" required>
-        </div>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="patients">Patients</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Add</li>
+    </ol>
+</nav>
 
-        <h5>Health Conditions</h5>
-        @foreach (var condition in newPatient.PatientRecord.HealthConditions)
-        {
-            <div>
-                <label for="conditionName">Condition Name</label>
-                <input type="text" id="conditionName" @bind="condition.Name" required>
-                <label for="conditionDate">Date</label>
-                <input type="date" id="conditionDate" @bind="condition.Date" required>
-                <label for="conditionStatus">Status</label>
-                <select id="conditionStatus" @bind="condition.Status">
-                    @foreach (var status in Enum.GetValues(typeof(Status)))
-                    {
-                        <option value="@status">@status</option>
-                    }
-                </select>
-                <button type="button" @onclick="() => RemoveCondition(condition)">Remove</button>
-            </div>
-        }
-        <button type="button" @onclick="AddCondition">Add Condition</button>
-
-        <button type="submit">Add Patient</button>
-    </EditForm>
+<div class="page-header">
+    <h1 class="h3 mb-0">Add New Patient</h1>
 </div>
+
+<EditForm Model="newPatient" OnValidSubmit="HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Patient Information</div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="patientName" class="form-label">Name</label>
+                    <input type="text" id="patientName" class="form-control" @bind="newPatient.PatientName" required />
+                </div>
+                <div class="col-md-3">
+                    <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                    <input type="date" id="dateOfBirth" class="form-control" @bind="newPatient.DateOfBirth" required />
+                </div>
+                <div class="col-md-3">
+                    <label for="ssn" class="form-label">SSN</label>
+                    <input type="text" id="ssn" class="form-control" placeholder="123-45-6789" autocomplete="off" @bind="newPatient.PatientRecord.SSN" required />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-semibold">Health Conditions</span>
+            <button type="button" class="btn btn-outline-primary btn-sm" @onclick="AddCondition"><i class="bi bi-plus-lg me-1"></i>Add Condition</button>
+        </div>
+        <div class="card-body">
+            @if (!newPatient.PatientRecord.HealthConditions.Any())
+            {
+                <p class="text-muted mb-0">No conditions added.</p>
+            }
+            @for (var i = 0; i < newPatient.PatientRecord.HealthConditions.Count; i++)
+            {
+                var condition = newPatient.PatientRecord.HealthConditions[i];
+                var n = i;
+                <div class="row g-3 align-items-end @(i > 0 ? "mt-1" : "")">
+                    <div class="col-md-5">
+                        <label for="conditionName-@n" class="form-label">Condition Name</label>
+                        <input type="text" id="conditionName-@n" class="form-control" @bind="condition.Name" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="conditionDate-@n" class="form-label">Date</label>
+                        <input type="date" id="conditionDate-@n" class="form-control" @bind="condition.Date" required />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="conditionStatus-@n" class="form-label">Status</label>
+                        <select id="conditionStatus-@n" class="form-select" @bind="condition.Status">
+                            @foreach (var status in Enum.GetValues<Status>())
+                            {
+                                <option value="@status">@status</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-outline-danger w-100" title="Remove condition" @onclick="() => RemoveCondition(condition)"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Add Patient</button>
+        <a href="patients" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</EditForm>
 
 @code {
     private Patient newPatient = new Patient
