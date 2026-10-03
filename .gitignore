@@ -482,3 +482,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Queryable Encryption local artifacts
+customer-master-key.txt
+mongo_crypt_shared_v1-*/
+mongo_crypt_shared_v1-*.tgz

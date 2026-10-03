@@ -4,9 +4,11 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
+      <UserSecretsId>3c729050-6dce-4694-b0a4-85bb93f7a159</UserSecretsId>
+  </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="MongoDB.Driver.Encryption" Version="3.5.0" />
       <PackageReference Include="MongoDB.EntityFrameworkCore" Version="9.0.1" />
     </ItemGroup>
 
