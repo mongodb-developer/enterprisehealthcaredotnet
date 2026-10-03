@@ -6,16 +6,23 @@
 @inject MongoDBService MongoDBService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<h3>Login</h3>
+<PageTitle>Login - Enterprise Healthcare</PageTitle>
 
-@if (IsAuthenticated)
-{
-    <p>You are signed in.</p>
-}
-else
-{
-    <a href="/auth/login" class="btn btn-primary">Authorize with Entra ID</a>
-}
+<div class="mx-auto mt-5" style="max-width: 420px">
+    <div class="card">
+        <div class="card-header">Login</div>
+        <div class="card-body p-4 text-center">
+            @if (IsAuthenticated)
+            {
+                <p class="mb-0">You are signed in.</p>
+            }
+            else
+            {
+                <a href="/auth/login" class="btn btn-primary">Authorize with Entra ID</a>
+            }
+        </div>
+    </div>
+</div>
 
 @code {
     private bool IsAuthenticated = false;

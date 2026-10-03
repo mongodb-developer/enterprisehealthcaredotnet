@@ -18,3 +18,14 @@ dotnet run
 3. This will then ask you to login with your Microsoft account for the tenant that you configured for EntraID.
 
 **Note:** This application uses in-memory cache so will reset the session between application runs. For this reason, ensure you clear cookies in your browser between runs to avoid a session mismatch and an MSAL error appearing. In production, you can set up a distributed cache to handle this instead.
+
+## Brand styling and fonts
+
+The UI follows the MongoDB brand refresh (dark Slate theme, Spring Green accents). The brand typefaces (Söhne, Söhne Mono and MongoDB Value Serif) are licensed, so they are **not included** in this repository and the app falls back to system fonts out of the box.
+
+If you are licensed to use them (for example, MongoDB employees via the brand portal), copy these files into `EnterpriseHealthcareDotNet/wwwroot/fonts/`. They are gitignored, so they will not be committed:
+
+- `Sohne-Regular.ttf`
+- `SohneCondensed-Bold.ttf`
+- `SohneMono-Medium.ttf`
+- `MongoDBValueSerif-Regular.otf`
