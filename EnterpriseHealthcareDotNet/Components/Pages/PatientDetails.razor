@@ -4,46 +4,69 @@
 @inject MongoDBService MongoDbService
 @inject NavigationManager NavigationManager
 
-<h3>Patient Details</h3>
+<PageTitle>@(patient?.PatientName ?? "Patient Details")</PageTitle>
 
-@if (patient == null)
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="patients">Patients</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@(patient?.PatientName ?? "Details")</li>
+    </ol>
+</nav>
+
+@if (loading)
 {
-    <p>Loading...</p>
+    <div class="text-center text-muted py-5">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading...
+    </div>
+}
+else if (patient == null)
+{
+    <div class="alert alert-warning">Patient not found. <a href="patients" class="alert-link">Back to patients</a></div>
 }
 else
 {
-    <div>
-        <p><strong>Name:</strong> @patient.PatientName</p>
-        <p><strong>Date of Birth:</strong> @patient.DateOfBirth?.ToShortDateString()</p>
-        <p><strong>Health Conditions: </strong></p>
-        <table class="table table-hover table-responsive-sm">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            @if(patient.PatientRecord.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
-            {
-                <tr>
-                    <td colspan="3">No health conditions found.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var condition in patient.PatientRecord.HealthConditions)
-                {
-                    <tr>
-                        <td>@condition.Name</td>
-                        <td>@condition.Date.ToShortDateString()</td>
-                        <td>@condition.Status</td>
-                    </tr>
-                }
-            }
-            </tbody>
-        </table>
+    <div class="page-header">
+        <h1 class="h3 mb-0">Patient Details</h1>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Patient Information</div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@patient.PatientName</dd>
+                <dt class="col-sm-3">Date of Birth</dt>
+                <dd class="col-sm-9 mb-0">@patient.DateOfBirth?.ToString("MMM d, yyyy")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header fw-semibold">Health Conditions</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>Name</th><th>Date</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @if (patient.PatientRecord?.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
+                    {
+                        <tr><td colspan="3" class="text-muted text-center">No health conditions found.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var condition in patient.PatientRecord.HealthConditions)
+                        {
+                            <tr>
+                                <td>@condition.Name</td>
+                                <td>@condition.Date.ToString("MMM d, yyyy")</td>
+                                <td><span class="badge @(condition.Status == Status.Active ? "text-bg-warning" : "text-bg-secondary")">@condition.Status</span></td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 
@@ -52,6 +75,5 @@ else
     public string Id { get; set; }
 
     private Patient? patient;
-
-    
+    private bool loading;
 }
