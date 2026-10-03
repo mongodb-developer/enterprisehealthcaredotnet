@@ -487,3 +487,7 @@ $RECYCLE.BIN/
 customer-master-key.txt
 mongo_crypt_shared_v1-*/
 mongo_crypt_shared_v1-*.tgz
+
+# Licensed MongoDB brand fonts - drop locally, never commit
+EnterpriseHealthcareDotNet/wwwroot/fonts/*
+!EnterpriseHealthcareDotNet/wwwroot/fonts/README.md

@@ -1,103 +1,162 @@
 @page "/patient/{id}"
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
-@using MongoDB.Bson
 @inject PatientService PatientService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
-<h3>Patient Details</h3>
+<PageTitle>@(patient?.PatientName ?? "Patient Details")</PageTitle>
 
-@if (patient == null)
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="patients">Patients</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@(patient?.PatientName ?? "Details")</li>
+    </ol>
+</nav>
+
+@if (loading)
 {
-    <p>Loading...</p>
+    <div class="text-center text-muted py-5">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading...
+    </div>
+}
+else if (patient == null)
+{
+    <div class="alert alert-warning">Patient not found. <a href="patients" class="alert-link">Back to patients</a></div>
 }
 else
 {
-    <div>
-        <p><strong>Name:</strong> <input type="text" @bind="patient.PatientName" readonly="@(!isEditMode)" /></p>
-        <p><strong>Date of Birth:</strong> <input type="date" @bind="patient.DateOfBirth" readonly="@(!isEditMode)" /></p>
-        <p><strong>SSN:</strong> <input type="text" @bind="patient.PatientRecord.SSN" readonly="@(!isEditMode)" /></p>
-        <p><strong>Health Conditions: </strong></p>
-        <table class="table table-hover table-responsive-sm">
-            <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            @if(patient.PatientRecord.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
+    <div class="page-header">
+        <h1 class="h3 mb-0">@(isEditMode ? "Edit Patient" : "Patient Details")</h1>
+        <div class="d-flex gap-2">
+            @if (isEditMode)
             {
-                <tr>
-                    <td colspan="3">No health conditions found.</td>
-                </tr>
+                <button class="btn btn-success" @onclick="SaveChanges"><i class="bi bi-check-lg me-1"></i>Save</button>
+                <button class="btn btn-outline-secondary" @onclick="CancelEdit">Cancel</button>
             }
             else
             {
-                @foreach (var condition in patient.PatientRecord.HealthConditions)
-                {
-                    <tr>
-                        <td><input type="text" @bind="condition.Name" readonly="@(!isEditMode)" /></td>
-                        <td><input type="date" @bind="condition.Date" readonly="@(!isEditMode)" /></td>
-                        <td>
-                            <select @bind="condition.Status" disabled="@(!isEditMode)">
-                                @foreach (var status in Enum.GetValues(typeof(Status)))
-                                {
-                                    <option value="@status">@status</option>
-                                }
-                            </select>
-                        </td>
-                    </tr>
-                }
+                <button class="btn btn-primary" @onclick="() => isEditMode = true"><i class="bi bi-pencil me-1"></i>Edit</button>
             }
-            </tbody>
-        </table>
+            <button class="btn btn-outline-danger" @onclick="DeletePatient"><i class="bi bi-trash me-1"></i>Delete</button>
+        </div>
+    </div>
 
-        <button class="btn btn-primary btn-sm" @onclick="ToggleEditMode">@editButtonText</button>
-        @if (isEditMode)
-        {
-            <button class="btn btn-success btn-sm" @onclick="SaveChanges">Save</button>
-        }
-        <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id.ToString())">Delete</button>
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Patient Information</div>
+        <div class="card-body">
+            @if (isEditMode)
+            {
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label" for="name">Name</label>
+                        <input id="name" class="form-control" @bind="patient.PatientName" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="dob">Date of Birth</label>
+                        <input id="dob" type="date" class="form-control" @bind="patient.DateOfBirth" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label" for="ssn">SSN</label>
+                        <input id="ssn" class="form-control" autocomplete="off" @bind="patient.PatientRecord.SSN" />
+                    </div>
+                </div>
+            }
+            else
+            {
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Name</dt>
+                    <dd class="col-sm-9">@patient.PatientName</dd>
+                    <dt class="col-sm-3">Date of Birth</dt>
+                    <dd class="col-sm-9">@patient.DateOfBirth?.ToString("MMM d, yyyy")</dd>
+                    <dt class="col-sm-3">SSN</dt>
+                    <dd class="col-sm-9 mb-0"><MaskedSsn Value="@patient.PatientRecord?.SSN" /></dd>
+                </dl>
+            }
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header fw-semibold">Health Conditions</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr><th>Name</th><th>Date</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    @if (patient.PatientRecord?.HealthConditions == null || !patient.PatientRecord.HealthConditions.Any())
+                    {
+                        <tr><td colspan="3" class="text-muted text-center">No health conditions found.</td></tr>
+                    }
+                    else
+                    {
+                        @foreach (var condition in patient.PatientRecord.HealthConditions)
+                        {
+                            <tr>
+                                @if (isEditMode)
+                                {
+                                    <td><input class="form-control form-control-sm" @bind="condition.Name" /></td>
+                                    <td><input type="date" class="form-control form-control-sm" @bind="condition.Date" /></td>
+                                    <td>
+                                        <select class="form-select form-select-sm" @bind="condition.Status">
+                                            @foreach (var status in Enum.GetValues<Status>())
+                                            {
+                                                <option value="@status">@status</option>
+                                            }
+                                        </select>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>@condition.Name</td>
+                                    <td>@condition.Date.ToString("MMM d, yyyy")</td>
+                                    <td><span class="badge @(condition.Status == Status.Active ? "text-bg-warning" : "text-bg-secondary")">@condition.Status</span></td>
+                                }
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 }
 
 @code {
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = "";
 
     private Patient? patient;
-    private bool isEditMode = false;
-    private string editButtonText = "Edit";
+    private bool loading = true;
+    private bool isEditMode;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        if (!string.IsNullOrEmpty(Id))
-        {
-            patient = PatientService.GetPatientById(Id);
-        }
+        loading = true;
+        patient = string.IsNullOrEmpty(Id) ? null : PatientService.GetPatientById(Id);
+        loading = false;
     }
 
-    private void ToggleEditMode()
+    private void CancelEdit()
     {
-        isEditMode = !isEditMode;
-        editButtonText = isEditMode ? "Cancel" : "Edit";
+        isEditMode = false;
+        patient = PatientService.GetPatientById(Id);
     }
 
-    private async Task SaveChanges()
+    private void SaveChanges()
     {
         if (patient != null)
         {
             PatientService.EditPatient(patient);
             isEditMode = false;
-            editButtonText = "Edit";
         }
     }
 
-    private async Task DeletePatient(string patientId)
+    private async Task DeletePatient()
     {
-        PatientService.DeletePatient(patientId);
+        if (patient == null || !await JS.InvokeAsync<bool>("confirm", $"Delete {patient.PatientName}? This cannot be undone."))
+            return;
+
+        PatientService.DeletePatient(patient.Id.ToString());
         NavigationManager.NavigateTo("/patients");
     }
 }
