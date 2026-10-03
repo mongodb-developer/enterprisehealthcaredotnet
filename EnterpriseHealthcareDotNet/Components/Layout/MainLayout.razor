@@ -1,19 +1,10 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-<div class="page">
+<NavMenu />
 
-    <main>
-        @* Commenting out NavMenu until the design is improved *@
-        @* <div class="top-row px-4 page"> *@
-        @* *@
-        @*     $1$ <NavMenu/> #1# *@
-        @* </div> *@
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+<main class="container py-4">
+    @Body
+</main>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
