@@ -2,71 +2,87 @@
 @using EnterpriseHealthcareDotNet.Models
 @using EnterpriseHealthcareDotNet.Services
 @inject PatientService PatientService
-@inject NavigationManager NavigationManager
 
-<div>
-    <h5>Search by SSN</h5>
-    <EditForm Model="searchModel" OnValidSubmit="HandleSearchBySSN">
-        <div>
-            <label for="ssn">SSN</label>
-            <input type="text" id="ssn" @bind="searchModel.SSN" class="form-control" required />
+<PageTitle>Search Patients</PageTitle>
+
+<div class="page-header">
+    <h1 class="h3 mb-0">Search Patients</h1>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold"><i class="bi bi-123 me-2"></i>Search by SSN</div>
+            <div class="card-body">
+                <EditForm Model="searchModel" OnValidSubmit="HandleSearchBySSN">
+                    <label for="ssn" class="form-label">SSN</label>
+                    <input type="text" id="ssn" class="form-control" placeholder="123-45-6789" autocomplete="off" @bind="searchModel.SSN" required />
+                    <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-search me-1"></i>Search</button>
+                </EditForm>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
-    </EditForm>
-
-    <hr class="my-4" />
-
-    <h5>Search by Date of Birth Range</h5>
-    <EditForm Model="searchModel" OnValidSubmit="HandleSearchByDOB">
-        <div>
-            <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" @bind="searchModel.StartDate" class="form-control" required />
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header fw-semibold"><i class="bi bi-calendar-range me-2"></i>Search by Date of Birth Range</div>
+            <div class="card-body">
+                <EditForm Model="searchModel" OnValidSubmit="HandleSearchByDOB">
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" id="startDate" class="form-control" @bind="searchModel.StartDate" required />
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" id="endDate" class="form-control" @bind="searchModel.EndDate" required />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-search me-1"></i>Search</button>
+                </EditForm>
+            </div>
         </div>
-        <div class="mt-2">
-            <label for="endDate">End Date</label>
-            <input type="date" id="endDate" @bind="searchModel.EndDate" class="form-control" required />
-        </div>
-        <button type="submit" class="btn btn-primary mt-2">Search</button>
-    </EditForm>
-
-    <div class="mt-4">
-        <h5>Search Results</h5>
-        @if (SearchResults == null)
-        {
-            <p>No results found.</p>
-        }
-        else
-        {
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>SSN</th>
-                    <th>Date of Birth</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach (var patient in SearchResults)
-                {
-                    <tr>
-                        <td>@patient.PatientName</td>
-                        <td>@patient.PatientRecord.SSN</td>
-                        <td>@patient.DateOfBirth</td>
-                    </tr>
-                }
-                </tbody>
-            </table>
-        }
     </div>
 </div>
 
+@if (SearchResults != null)
+{
+    <div class="card">
+        <div class="card-header fw-semibold">Search Results <span class="badge text-bg-secondary ms-1">@SearchResults.Count</span></div>
+        @if (SearchResults.Count == 0)
+        {
+            <div class="card-body text-center text-muted">No results found.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr><th>Name</th><th>SSN</th><th>Date of Birth</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var patient in SearchResults)
+                        {
+                            <tr>
+                                <td class="fw-medium">@patient.PatientName</td>
+                                <td><MaskedSsn Value="@patient.PatientRecord?.SSN" /></td>
+                                <td>@patient.DateOfBirth?.ToString("MMM d, yyyy")</td>
+                                <td class="text-end"><a href="patient/@patient.Id" class="btn btn-outline-primary btn-sm">View</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}
+
 @code {
     private SearchModel searchModel = new SearchModel();
-    private List<Patient> SearchResults { get; set; }
+    private List<Patient>? SearchResults { get; set; }
 
     private void HandleSearchBySSN()
     {
-        SearchResults =  PatientService.SearchPatientsBySSNAsync(searchModel.SSN);
+        SearchResults = PatientService.SearchPatientsBySSNAsync(searchModel.SSN);
         searchModel.SSN = "";
     }
 
@@ -74,13 +90,13 @@
     {
         if (searchModel.StartDate.HasValue && searchModel.EndDate.HasValue)
         {
-            SearchResults =PatientService.SearchPatientsByDOBAsync(searchModel.StartDate.Value, searchModel.EndDate.Value);
+            SearchResults = PatientService.SearchPatientsByDOBAsync(searchModel.StartDate.Value, searchModel.EndDate.Value);
         }
     }
 
     public class SearchModel
     {
-        public string SSN { get; set; }
+        public string SSN { get; set; } = "";
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
     }

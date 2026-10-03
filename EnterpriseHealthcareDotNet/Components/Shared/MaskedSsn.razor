@@ -1,0 +1,15 @@
+<span class="ssn">@Display</span>
+<button type="button" class="btn btn-link btn-sm p-0 ms-2 align-baseline" title="@(revealed ? "Hide SSN" : "Reveal SSN")" @onclick="() => revealed = !revealed">
+    <i class="bi @(revealed ? "bi-eye-slash" : "bi-eye")"></i>
+</button>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+
+    private bool revealed;
+
+    private string Display =>
+        string.IsNullOrEmpty(Value) ? "—"
+        : revealed ? Value
+        : "•••-••-" + (Value.Length >= 4 ? Value[^4..] : "••••");
+}
