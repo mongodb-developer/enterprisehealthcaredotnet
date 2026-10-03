@@ -482,3 +482,7 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Licensed MongoDB brand fonts - drop locally, never commit
+EnterpriseHealthcareDotNet/wwwroot/fonts/*
+!EnterpriseHealthcareDotNet/wwwroot/fonts/README.md
