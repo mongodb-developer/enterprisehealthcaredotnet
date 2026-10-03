@@ -1,39 +1,188 @@
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+/* Brand fonts are licensed and NOT committed (see README). If the files are missing the
+   browser falls back to the system stacks defined in --font-* below. */
+@font-face { font-family: 'Sohne'; src: url('fonts/Sohne-Regular.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+@font-face { font-family: 'Sohne Condensed'; src: url('fonts/SohneCondensed-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Sohne Mono'; src: url('fonts/SohneMono-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'MongoDB Value Serif'; src: url('fonts/MongoDBValueSerif-Regular.otf') format('opentype'); font-weight: 400; font-display: swap; }
+
+:root {
+    /* MongoDB brand refresh */
+    --mdb-off-white: #FAFBFC;
+    --mdb-chartreuse: #B1FF05;
+    --mdb-spring-green: #00ED64;
+    --mdb-evergreen: #023430;
+    --mdb-slate: #001E2B;
+    --mdb-deep-orange: #FF4F00;
+    --mdb-chrome-yellow: #FFAD00;
+    --mdb-cosmic-pink: #D959EA;
+    --mdb-sky: #00C2EB;
+
+    --mdb-surface: #0A2B3A;
+    --mdb-border: #1E4352;
+
+    --font-body: 'Sohne', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-headline: 'Sohne Condensed', 'Arial Narrow', Impact, sans-serif;
+    --font-mono: 'Sohne Mono', ui-monospace, Menlo, monospace;
+    --font-serif: 'MongoDB Value Serif', Georgia, serif;
+
+    --bs-body-font-family: var(--font-body);
+    --bs-body-bg: var(--mdb-slate);
+    --bs-body-color: var(--mdb-off-white);
+    --bs-primary: var(--mdb-spring-green);
+    --bs-primary-rgb: 0, 237, 100;
+    --bs-link-color: var(--mdb-spring-green);
+    --bs-link-color-rgb: 0, 237, 100;
+    --bs-link-hover-color: var(--mdb-chartreuse);
+    --bs-link-hover-color-rgb: 177, 255, 5;
+    --bs-border-color: var(--mdb-border);
+    --bs-secondary-color: rgba(250, 251, 252, .65);
+    --bs-card-bg: var(--mdb-surface);
 }
 
-a, .btn-link {
-    color: #006bb7;
+html, body { font-family: var(--font-body); font-synthesis: none; }
+body { background-color: var(--mdb-slate); color: var(--mdb-off-white); }
+
+/* Only one weight of Sohne is licensed here - don't let the browser fake bold */
+b, strong, th, dt, .fw-medium, .fw-semibold, .fw-bold, .card-header { font-weight: 400 !important; }
+
+h1, h2, h3, .h1, .h2, .h3, .navbar-brand, .display-4 {
+    font-family: var(--font-headline);
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: .01em;
+}
+h1, .h1, h2, .h2 { line-height: 1; }
+.h3 { font-size: 2.25rem; }
+
+h4, h5, h6, .card-title { font-family: var(--font-body); }
+
+.eyebrow {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: .75rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--mdb-spring-green);
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+.subheadline { font-family: var(--font-serif); font-size: 1.5rem; line-height: 1.25; }
+.hero-title { font-size: clamp(3rem, 9vw, 6rem); }
+
+/* Chrome */
+.navbar, .bg-primary {
+    background-color: var(--mdb-slate) !important;
+    border-bottom: 1px solid var(--mdb-border);
+    box-shadow: none !important;
+}
+.navbar-brand { font-size: 1.4rem; color: var(--mdb-off-white); }
+.navbar .nav-link { font-family: var(--font-mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+.navbar .nav-link.active { color: var(--mdb-spring-green); }
+.navbar .nav-link:hover { color: var(--mdb-chartreuse); }
+.navbar-toggler { border-color: var(--mdb-border); }
+.breadcrumb { font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; }
+
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+/* Cards & tables */
+.card { background-color: var(--mdb-surface); border: 1px solid var(--mdb-border); box-shadow: none; }
+.card-header { background: transparent; border-bottom: 1px solid var(--mdb-border); font-family: var(--font-mono); font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; color: var(--mdb-spring-green); }
+.table { --bs-table-bg: transparent; --bs-table-hover-bg: rgba(0, 237, 100, .06); --bs-table-hover-color: var(--mdb-off-white); --bs-table-border-color: var(--mdb-border); }
+.table > :not(caption) > * > * { padding: .85rem 1rem; vertical-align: middle; }
+.table thead th { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--bs-secondary-color); }
+
+.hover-card { transition: transform .2s ease-in-out, border-color .2s; }
+.hover-card:hover { transform: translateY(-4px); border-color: var(--mdb-spring-green); }
+
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    font-size: 1.5rem;
+    color: var(--mdb-slate);
 }
 
-.content {
-    padding-top: 1.1rem;
+/* Buttons */
+.btn { font-family: var(--font-body); border-radius: 999px; }
+.btn-primary, .btn-success {
+    --bs-btn-color: var(--mdb-slate);
+    --bs-btn-bg: var(--mdb-spring-green);
+    --bs-btn-border-color: var(--mdb-spring-green);
+    --bs-btn-hover-color: var(--mdb-slate);
+    --bs-btn-hover-bg: var(--mdb-chartreuse);
+    --bs-btn-hover-border-color: var(--mdb-chartreuse);
+    --bs-btn-active-color: var(--mdb-slate);
+    --bs-btn-active-bg: var(--mdb-chartreuse);
+    --bs-btn-active-border-color: var(--mdb-chartreuse);
 }
+.btn-outline-primary, .btn-outline-success {
+    --bs-btn-color: var(--mdb-spring-green);
+    --bs-btn-border-color: var(--mdb-spring-green);
+    --bs-btn-hover-color: var(--mdb-slate);
+    --bs-btn-hover-bg: var(--mdb-spring-green);
+    --bs-btn-hover-border-color: var(--mdb-spring-green);
+    --bs-btn-active-color: var(--mdb-slate);
+    --bs-btn-active-bg: var(--mdb-spring-green);
+}
+.btn-outline-info {
+    --bs-btn-color: var(--mdb-sky);
+    --bs-btn-border-color: var(--mdb-sky);
+    --bs-btn-hover-color: var(--mdb-slate);
+    --bs-btn-hover-bg: var(--mdb-sky);
+    --bs-btn-hover-border-color: var(--mdb-sky);
+}
+.btn-outline-danger {
+    --bs-btn-color: var(--mdb-deep-orange);
+    --bs-btn-border-color: var(--mdb-deep-orange);
+    --bs-btn-hover-color: var(--mdb-off-white);
+    --bs-btn-hover-bg: var(--mdb-deep-orange);
+    --bs-btn-hover-border-color: var(--mdb-deep-orange);
+    --bs-btn-active-bg: var(--mdb-deep-orange);
+}
+.btn-outline-secondary { --bs-btn-color: var(--mdb-off-white); --bs-btn-border-color: var(--mdb-border); --bs-btn-hover-bg: var(--mdb-evergreen); --bs-btn-hover-color: var(--mdb-off-white); --bs-btn-hover-border-color: var(--mdb-spring-green); }
 
-h1:focus {
-    outline: none;
-}
+.bg-primary.feature-icon, .feature-icon.bg-primary { background-color: var(--mdb-spring-green) !important; }
+.feature-icon.bg-success { background-color: var(--mdb-chartreuse) !important; }
+.feature-icon.bg-info { background-color: var(--mdb-sky) !important; }
+.text-primary { color: var(--mdb-spring-green) !important; }
+
+/* Badges: Active = chrome yellow, Past = muted */
+.badge { font-family: var(--font-mono); font-weight: 500; letter-spacing: .06em; text-transform: uppercase; }
+.text-bg-warning { background-color: var(--mdb-chrome-yellow) !important; color: var(--mdb-slate) !important; }
+.text-bg-secondary { background-color: var(--mdb-border) !important; color: var(--mdb-off-white) !important; }
+
+/* Forms */
+.form-control, .form-select { background-color: var(--mdb-slate); border-color: var(--mdb-border); color: var(--mdb-off-white); }
+.form-control::placeholder { color: rgba(250, 251, 252, .35); }
+.form-control:focus, .form-select:focus { background-color: var(--mdb-slate); border-color: var(--mdb-spring-green); color: var(--mdb-off-white); box-shadow: 0 0 0 .2rem rgba(0, 237, 100, .25); }
+.form-label { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: var(--bs-secondary-color); }
+.form-control[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); }
+.btn-link { color: var(--mdb-spring-green); }
+
+.ssn { font-family: var(--font-mono); letter-spacing: .05em; }
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus { box-shadow: 0 0 0 .2rem rgba(0, 237, 100, .35); }
+
+h1:focus { outline: none; }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid var(--mdb-spring-green);
 }
 
 .invalid {
-    outline: 1px solid #e50000;
+    outline: 1px solid var(--mdb-deep-orange);
 }
 
 .validation-message {
-    color: #e50000;
+    color: var(--mdb-deep-orange);
 }
 
 .blazor-error-boundary {
