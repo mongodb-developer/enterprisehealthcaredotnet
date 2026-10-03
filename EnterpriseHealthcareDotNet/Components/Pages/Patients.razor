@@ -3,43 +3,59 @@
 @using EnterpriseHealthcareDotNet.Services
 @using MongoDB.Bson
 @inject MongoDBService MongoDbService
-@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 
-<button class="btn btn-secondary btn-sm mb-3" @onclick="GoBack">Go Back</button>
+<PageTitle>Patients</PageTitle>
+
+<div class="page-header">
+    <h1 class="h3 mb-0">Patients</h1>
+    <a href="patients/add" class="btn btn-primary"><i class="bi bi-person-plus me-1"></i>Add Patient</a>
+</div>
 
 @if (patients == null)
 {
-    <p>Loading...</p>
+    <div class="text-center text-muted py-5">
+        <div class="spinner-border spinner-border-sm me-2" role="status"></div>Loading patients...
+    </div>
 }
 else if (!patients.Any())
 {
-    <p>No patients found.</p>
+    <div class="card text-center py-5">
+        <div class="card-body">
+            <i class="bi bi-people display-5 text-muted"></i>
+            <p class="text-muted mt-3">No patients found.</p>
+            <a href="patients/add" class="btn btn-primary">Add your first patient</a>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table table-hover table-responsive-sm">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Date of Birth</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var patient in patients)
-        {
-            <tr>
-                <td>@patient.PatientName</td>
-                <td>@patient.DateOfBirth</td>
-                <td>
-                    <a href="/patient/@patient.Id" class="btn btn-primary btn-sm">View Details</a>
-                    <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
-
-                </td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Date of Birth</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var patient in patients)
+                    {
+                        <tr>
+                            <td class="fw-medium">@patient.PatientName</td>
+                            <td>@patient.DateOfBirth?.ToString("MMM d, yyyy")</td>
+                            <td class="text-end text-nowrap">
+                                <a href="patient/@patient.Id" class="btn btn-outline-primary btn-sm"><i class="bi bi-eye me-1"></i>View</a>
+                                <button class="btn btn-outline-danger btn-sm" @onclick="() => DeletePatient(patient)"><i class="bi bi-trash me-1"></i>Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 }
 
 @code {
@@ -50,19 +66,12 @@ else
         patients = await MongoDbService.GetPatientsAsync();
     }
 
-    private void NavigateToPatientDetails(string patientId)
+    private async Task DeletePatient(Patient patient)
     {
-        NavigationManager.NavigateTo($"/patient/{patientId}");
-    }
-    
-    private async Task DeletePatient(ObjectId patientId)
-    {
-        await MongoDbService.DeletePatientAsync(patientId.ToString());
+        if (!await JS.InvokeAsync<bool>("confirm", $"Delete {patient.PatientName}? This cannot be undone."))
+            return;
+
+        await MongoDbService.DeletePatientAsync(patient.Id.ToString());
         patients = await MongoDbService.GetPatientsAsync();
-    }
-    
-    private void GoBack()
-    {
-        NavigationManager.NavigateTo("/");
     }
 }
